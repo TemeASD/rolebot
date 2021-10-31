@@ -2,7 +2,7 @@ const fs = require('fs');
 const { Client, Collection, Intents, MessageEmbed } = require('discord.js');
 
 // Custom requires
-const { clientId, token } = require('./config.json');
+const { clientId, token, channelId } = require('./config.json');
 const emojis = require('./emojis.json');
 const roleManager = require('./libs/rolemanager.js');
 const messageManager = require('./libs/messagemanager.js')
@@ -21,7 +21,7 @@ const client = new Client({
 client.once('ready', async () => {
 	// Find out if we have already sent some messages
 	try {
-		const channel = await client.channels.fetch("272444401530306560");
+		const channel = await client.channels.fetch(channelId);
 		if (messages[0] === undefined) {
 			await messageManager.sendBotMessages(client, channel);
 			messages = await messageManager.getBotMessages();

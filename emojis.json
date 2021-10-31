@@ -5,12 +5,12 @@
     "emoji_name": "<:ACRL_LOGO:895947091728285696>"
   },
   "895949156550578176": {
-    "role_name": "ACC",
+    "role_name": "AC Competizione",
     "role_id": "895951704506376264",
     "emoji_name": "<:ACRL_ACC_ROLE:895949156550578176>"
   },
   "895949156521238578": {
-    "role_name": "AC",
+    "role_name": "Assetto Corsa 1",
     "role_id": "895951949252415529",
     "emoji_name": "<:ACRL_AC_ROLE:895949156521238578>"
   },
@@ -18,5 +18,10 @@
     "role_name": "ENDURANCE",
     "role_id": "895951996278947880",
     "emoji_name": "<:ACRL_ENDU_ROLE:895949156584128522>"
+  },
+  "896336552966373397": {
+    "role_name": "RALLY",
+    "role_id": "896336912233680907",
+    "emoji_name": "<:ACRL_RALLY_ROLE:896336552966373397>"
   }
 }
