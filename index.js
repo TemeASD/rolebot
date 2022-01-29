@@ -9,16 +9,26 @@ const messageManager = require('./libs/messagemanager.js')
 const utils = require('./libs/utils.js');
 
 messages = messageManager.getBotMessages();
+const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+
 
 const client = new Client({
 	intents:
 		[Intents.FLAGS.GUILDS,
+		Intents.FLAGS.GUILD_MEMBERS,
+		Intents.FLAGS.GUILD_PRESENCES,
 		Intents.FLAGS.GUILD_MESSAGES,
 		Intents.FLAGS.GUILD_MESSAGE_REACTIONS],
-	partials: ['MESSAGE', 'CHANNEL', 'REACTION']
+	partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'USER']
 });
 
 client.once('ready', async () => {
+	client.commands = new Collection();
+	for (const file of commandFiles) {
+		const command = require(`./commands/${file}`);
+		client.commands.set(command.data.name, command);
+	}
+
 	// Find out if we have already sent some messages
 	try {
 		const channel = await client.channels.fetch(channelId);
@@ -62,5 +72,25 @@ client.on('messageReactionRemove', async (reaction, user) => {
 	return
 })
 
+client.on('interactionCreate', async interaction => {
+	if (!interaction.isCommand()) return;
+
+	const command = client.commands.get(interaction.commandName);
+
+	if (!command) return;
+
+	try {
+		await command.execute(interaction);
+	} catch (error) {
+		console.error(error);
+		return interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+	}
+});
+
+
+client.on('guildMemberUpdate', function (oldMember, newMember) {
+	console.error(`a guild member changes - i.e. new role, removed role, nickname.`);
+	console.log(oldMember, newMember)
+});
 
 client.login(token);
