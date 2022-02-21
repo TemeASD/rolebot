@@ -3,8 +3,9 @@ const { Client, Collection, Intents, MessageEmbed } = require('discord.js');
 
 // Custom requires
 const { clientId, token, channelId } = require('./config.json');
-const emojis = require('./emojis.json');
+
 const roleManager = require('./libs/rolemanager.js');
+const userManager = require('./libs/usermanager.js');
 const messageManager = require('./libs/messagemanager.js')
 const utils = require('./libs/utils.js');
 
@@ -28,28 +29,20 @@ client.once('ready', async () => {
 		const command = require(`./commands/${file}`);
 		client.commands.set(command.data.name, command);
 	}
-
-	// Find out if we have already sent some messages
-	try {
-		const channel = await client.channels.fetch(channelId);
-		if (messages[0] === undefined) {
-			await messageManager.sendBotMessages(client, channel);
-			messages = await messageManager.getBotMessages();
-			console.log(messages)
-		}
-	} catch {
-		console.log('fucked')
-	}
-	for (message of messages) {
-		console.log(`we have a message ${message.id}`)
-	}
+	console.info('client.once: ready!')
 });
 
 client.on("messageCreate", function (message) {
-	if (message.author.bot && message.author.id === clientId) {
-		console.log('make sure that its our own message');
-		for (emoji in emojis) {
-			message.react(emojis[emoji].emoji_name);
+	console.log('GOT A MESSAGE')
+	if (message.author.bot && message.author.id === '788492942259781669') {
+		console.log('GOT A MESSAGE SENT BY US!');
+		/*THE BOT HAS NOW SENT THE ROLE CREATE MESSAGE APPROPRIATELY*/
+		/*MOVE COMMITTING THE ROLES-EMOJIS STATE HERE SINCE HERE IS WHERE WE GET THE MESSAGE.ID THEY BELONG TO*/
+		roleManager.addMessageIdToEmojis(message.id)
+		let roles = roleManager.getRolesOfLastCommand();
+		roleManager.clearRolesOfLastCommand(roles)
+		for (const role of roles) {
+			message.react(role.emoji_name);
 		}
 		messageManager.setBotMessages(message);
 		return
@@ -59,20 +52,24 @@ client.on("messageCreate", function (message) {
 });
 
 client.on('messageReactionAdd', async (reaction, user) => {
-	for (message of messages) {
+	for (message of messageManager.getBotMessages()) {
 		if (message.id === reaction.message.id) {
-			if (await utils.checkIfCorrectEmote(emojis, reaction)) { roleManager.addRole(reaction, user); }
+			if (await utils.checkIfCorrectEmote(roleManager.getRoles(), reaction)) { userManager.addRoleToUser(reaction, user); }
 		}
 	}
 	return
 });
 
 client.on('messageReactionRemove', async (reaction, user) => {
-	if (await utils.checkIfCorrectEmote(emojis, reaction)) { roleManager.removeRole(reaction, user); }
+	for (message of messageManager.getBotMessages()) {
+		if (message.id === reaction.message.id) {
+			if (await utils.checkIfCorrectEmote(roleManager.getRoles(), reaction)) { userManager.removeRoleFromUser(reaction, user); }
+		}
+	}
 	return
 })
 
-client.on('interactionCreate', async interaction => {
+client.on('interactionCreate', async (interaction) => {
 	if (!interaction.isCommand()) return;
 
 	const command = client.commands.get(interaction.commandName);
@@ -90,7 +87,6 @@ client.on('interactionCreate', async interaction => {
 
 client.on('guildMemberUpdate', function (oldMember, newMember) {
 	console.error(`a guild member changes - i.e. new role, removed role, nickname.`);
-	console.log(oldMember, newMember)
 });
 
 client.login(token);
