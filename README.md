@@ -23,7 +23,7 @@ Has few commands built in, currently localized in Finnish.
         * Used by the bot to designate an emoji to a role. 
         * At the moment, you can have four of these per message. 
         * Each emoji must be a custom emoji, and **must be used by only once!**
-2. `/admin` with one argument
+2. `/lisaa-admin` with one argument
     * @username
         * The user who you wish to have access to the bot
 3. `/poista-rooli-kayttajilta` with one argument
