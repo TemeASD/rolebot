@@ -17,6 +17,7 @@ let emojisOfLastCommand = []
  * @returns {string} possible values; EXISTS, DUPLICATE or MISSING
  */
 exports.validateRoles = async (data) => {
+  /*I have no cleu why this works or doesn't work. it is complete garbage code :D*/
   if (emojis[data.emoji_id] != undefined) {
     if (emojis[data.emoji_id].role_id != data.role_id) {
       return "EXISTS"

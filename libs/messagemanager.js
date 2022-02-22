@@ -47,6 +47,9 @@ exports.sendSubRoleMessage = async (commandArgs) => {
   for (let role of commandArgs.roles) {
     role.emoji_id = util.emojiIdFromName(role.emoji)
     let newRole = util.constructRoleData(role)
+    /*TODO: Fix a bug that causes the bot to work.*/
+    /*validateRoles returns garbage, and no default case on the switch case
+      makes the bot work as "intended" */
     switch (await roleManager.validateRoles(newRole)) {
       case 'VALID':
         /*TODO: no need to create, can use existing*/
